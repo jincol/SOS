@@ -1,0 +1,9 @@
+.git
+.idea
+.vscode
+.env
+node_modules
+vendor
+storage
+public/build
+.audit
