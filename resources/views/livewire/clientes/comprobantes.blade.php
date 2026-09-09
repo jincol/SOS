@@ -217,7 +217,6 @@ new class extends Component {
                         'invoice_date' => $comprobante['invoice_date'] ?? '',
                         'amount_total' => $comprobante['amount_total'] ?? 0.0,
                         'amount_residual' => $comprobante['amount_residual'] ?? 0.0,
-                        'currency' => $comprobante['currency_id'] ?? 'PEN',
                         'dam' => $comprobante['dam'] ?? '',
                         'date_start' => $comprobante['date_start'] ?? '',
                         'date_outlet' => $comprobante['date_outlet'] ?? '',

@@ -93,8 +93,6 @@
                                         }
                                         $serviceCode = $comprobante['service_type'] ?? '';
                                         $service = ['ALMACENAMIENTO' => 'Almacenamiento', 'COMPLEMENTARIO' => 'Complementario', 'COMPLEMENTARIOS' => 'Complementario'][$serviceCode] ?? ($serviceCode ?: 'No registrado');
-                                        $currencyCode = strtoupper($comprobante['currency'] ?? 'PEN');
-                                        $currencySymbol = match($currencyCode) { 'PEN' => 'S/', 'USD' => 'US$', default => $currencyCode };
                                         $periodStart = $comprobante['date_start'] ? \Carbon\Carbon::parse($comprobante['date_start'])->format('d/m/Y') : null;
                                         $periodEnd = $comprobante['date_outlet'] ? \Carbon\Carbon::parse($comprobante['date_outlet'])->format('d/m/Y') : null;
                                         $dueLabel = $accountingCode === 'posted' ? ($comprobante['vencimiento'] ?: '—') : 'No aplica';
@@ -117,8 +115,8 @@
                                         <td data-label="Estado de pago"><span class="badge {{ $paymentClass }}">{{ $paymentLabel }}</span></td>
                                         <td data-label="Estado del comprobante"><span class="badge {{ $accountingClass }}">{{ $accountingLabel }}</span></td>
                                         <td data-label="Vencimiento">{{ $dueLabel }}</td>
-                                        <td data-label="Importe total">{{ $currencySymbol }} {{ number_format($comprobante['amount_total'] ?? 0, 2) }}</td>
-                                        <td data-label="Saldo pendiente">{{ $currencySymbol }} {{ number_format($comprobante['amount_residual'] ?? 0, 2) }}</td>
+                                        <td data-label="Importe total">S/ {{ number_format($comprobante['amount_total'] ?? 0, 2) }}</td>
+                                        <td data-label="Saldo pendiente">S/ {{ number_format($comprobante['amount_residual'] ?? 0, 2) }}</td>
                                         <td class="documents-column" data-label="Documentos">
                                             <div class="row-actions">
                                                 @if($comprobante['ruta_pdf'])
