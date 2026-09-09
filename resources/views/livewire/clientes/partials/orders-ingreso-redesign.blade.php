@@ -26,7 +26,7 @@
                 </button>
             </div>
 
-            <div class="card filters-card orders-filters" x-data="{ advanced: {{ ($filtroAlmacenero || $filtroCompany || $filtroUsuario) ? 'true' : 'false' }} }">
+            <div class="card filters-card orders-filters" x-data="{ advanced: {{ ($filtroAlmacenero || $filtroCompany) ? 'true' : 'false' }} }">
                 <div class="orders-filters-main">
                     <div class="field orders-search-field">
                         <label for="ingreso-orden">Buscar orden</label>
@@ -64,10 +64,6 @@
                         <label for="ingreso-company">Compañía operadora</label>
                         <input id="ingreso-company" class="control" type="search" wire:model.live.debounce.350ms="filtroCompany" placeholder="Nombre de la compañía">
                     </div>
-                    <div class="field">
-                        <label for="ingreso-usuario">Registrado por</label>
-                        <input id="ingreso-usuario" class="control" type="search" wire:model.live.debounce.350ms="filtroUsuario" placeholder="Nombre del usuario">
-                    </div>
                 </div>
             </div>
 
@@ -79,8 +75,7 @@
                                 <th><button class="sort-button" type="button" wire:click="ordenar('name')">Orden @if($ordenarPor === 'name') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
                                 <th><button class="sort-button" type="button" wire:click="ordenar('fec_ingreso')">Fecha @if($ordenarPor === 'fec_ingreso') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
                                 <th>Tipo</th>
-                                <th>Responsable de almacén</th>
-                                <th>Registrado por</th>
+                                <th>Responsable</th>
                                 <th>Sede</th>
                                 <th class="align-right">Acciones</th>
                             </tr>
@@ -97,8 +92,7 @@
                                         <span class="cell-secondary">Creada {{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('d/m/Y · H:i') : 'sin fecha' }}</span>
                                     </td>
                                     <td data-label="Tipo"><span class="badge neutral">{{ $orden['tipo_ingreso'] ?: 'No registrado' }}</span></td>
-                                    <td data-label="Responsable de almacén"><span class="cell-clip" title="{{ $orden['almacenero'] }}">{{ $orden['almacenero'] ?: 'No asignado' }}</span></td>
-                                    <td data-label="Registrado por"><span class="cell-clip" title="{{ $orden['user'] }}">{{ $orden['user'] ?: 'No registrado' }}</span></td>
+                                    <td data-label="Responsable"><span class="cell-clip" title="{{ $orden['almacenero'] }}">{{ $orden['almacenero'] ?: 'No asignado' }}</span></td>
                                     <td data-label="Sede"><span class="cell-clip" title="{{ $orden['sucursal'] }}">{{ $orden['sucursal'] ?: 'No registrada' }}</span></td>
                                     <td data-label="Acciones">
                                         <div class="row-actions">
@@ -117,7 +111,7 @@
                                 </tr>
                             @empty
                                 <tr class="empty-row">
-                                    <td colspan="7">
+                                    <td colspan="6">
                                         <div class="empty-state">
                                             <span class="empty-icon"><x-sos-icon name="search" /></span>
                                             <h3>No encontramos órdenes</h3>

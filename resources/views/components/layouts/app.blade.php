@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
         @vite('resources/css/app.css')
-        <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.4">
+        <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.0.1">
         <meta name="theme-color" content="#b80d24">
         <title>{{ $title ?? 'Portal de clientes | Almacenes SOS' }}</title>
     </head>

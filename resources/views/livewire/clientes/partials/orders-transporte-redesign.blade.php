@@ -34,7 +34,7 @@
 
             <div class="card list-card orders-list-card">
                 <div class="table-wrap">
-                    <table class="data-table orders-table">
+                    <table class="data-table orders-table orders-table-transporte">
                         <thead><tr>
                             <th><button class="sort-button" type="button" wire:click="ordenar('name')">Orden @if($ordenarPor === 'name') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
                             <th><button class="sort-button" type="button" wire:click="ordenar('creation_date')">Fecha @if($ordenarPor === 'creation_date') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>

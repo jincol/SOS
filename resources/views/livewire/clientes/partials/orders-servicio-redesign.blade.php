@@ -28,7 +28,7 @@
                     <div class="field"><label for="servicio-company">Compañía operadora</label><input id="servicio-company" class="control" type="search" wire:model.live.debounce.350ms="filtroCompany" placeholder="Nombre de la compañía"></div>
                     <div class="field"><label for="servicio-consignatario">Consignatario</label><input id="servicio-consignatario" class="control" type="search" wire:model.live.debounce.350ms="filtroConsignatario" placeholder="Nombre o razón social"></div>
                     <div class="field"><label for="servicio-sucursal">Sucursal</label><input id="servicio-sucursal" class="control" type="search" wire:model.live.debounce.350ms="filtroSucursal" placeholder="Nombre de la sucursal"></div>
-                    <div class="field"><label for="servicio-usuario">Registrado por</label><input id="servicio-usuario" class="control" type="search" wire:model.live.debounce.350ms="filtroUsuario" placeholder="Nombre del usuario"></div>
+                    <div class="field"><label for="servicio-usuario">Usuario</label><input id="servicio-usuario" class="control" type="search" wire:model.live.debounce.350ms="filtroUsuario" placeholder="Responsable de registro"></div>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                         <thead><tr>
                             <th><button class="sort-button" type="button" wire:click="ordenar('name')">Orden @if($ordenarPor === 'name') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
                             <th><button class="sort-button" type="button" wire:click="ordenar('creation_datetime')">Fecha @if($ordenarPor === 'creation_datetime') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
-                            <th>Registrado por</th><th>Servicio</th><th>Consignatario</th><th>Sucursal</th><th>Estado</th><th class="align-right">Acciones</th>
+                            <th>Servicio</th><th>Consignatario</th><th>Sucursal</th><th>Estado</th><th class="align-right">Acciones</th>
                         </tr></thead>
                         <tbody>
                             @forelse($ordenesFiltradas as $orden)
@@ -50,8 +50,7 @@
                                 @endphp
                                 <tr wire:key="servicio-{{ $orden['name'] }}">
                                     <td data-label="Orden"><span class="cell-primary order-code">{{ $orden['name'] ?: 'Sin código' }}</span><span class="cell-secondary cell-clip">{{ $orden['company'] ?: 'Compañía no registrada' }}</span></td>
-                                    <td data-label="Fecha"><span class="cell-primary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('d/m/Y') : 'No registrada' }}</span><span class="cell-secondary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('H:i') : 'Hora no registrada' }}</span></td>
-                                    <td data-label="Registrado por"><span class="cell-clip" title="{{ $orden['user'] }}">{{ $orden['user'] ?: 'No registrado' }}</span></td>
+                                    <td data-label="Fecha"><span class="cell-primary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('d/m/Y') : 'No registrada' }}</span><span class="cell-secondary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('H:i') : 'Hora no registrada' }} · {{ $orden['user'] ?: 'Sin usuario' }}</span></td>
                                     <td data-label="Servicio"><span class="cell-clip order-description" title="{{ $description }}">{{ $description ?: 'Sin descripción' }}</span></td>
                                     <td data-label="Consignatario"><span class="cell-clip" title="{{ $orden['consignatario'] }}">{{ $orden['consignatario'] ?: 'No registrado' }}</span></td>
                                     <td data-label="Sucursal"><span class="cell-clip" title="{{ $orden['branch'] }}">{{ $orden['branch'] ?: 'No registrada' }}</span></td>
@@ -64,7 +63,7 @@
                                     </div></td>
                                 </tr>
                             @empty
-                                <tr class="empty-row"><td colspan="8"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="search" /></span><h3>No encontramos órdenes</h3><p>Prueba con otros criterios o limpia los filtros.</p><button class="btn btn-secondary btn-sm" type="button" wire:click="resetFiltros">Limpiar filtros</button></div></td></tr>
+                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="search" /></span><h3>No encontramos órdenes</h3><p>Prueba con otros criterios o limpia los filtros.</p><button class="btn btn-secondary btn-sm" type="button" wire:click="resetFiltros">Limpiar filtros</button></div></td></tr>
                             @endforelse
                         </tbody>
                     </table>
