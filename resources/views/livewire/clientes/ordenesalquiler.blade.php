@@ -160,6 +160,8 @@ new class extends Component {
 
     public function obtenerOrdenesAlquiler(){
         //sleep(1);
+        $this->error = '';
+
         try {
             // Crear carpeta si no existe
             $storagePath = storage_path('app/public/ordenesAlquiler/' . date('Y/m'));
@@ -171,6 +173,9 @@ new class extends Component {
                 'Api-Key' => config('services.sistema25.api_key'),
                 'Content-Type' => 'application/json'
             ])
+                ->connectTimeout(15)
+                ->timeout(60)
+                ->retry(2, 1000)
                 ->get(config('services.sistema25.base_url').'/report/warehouse/rentals', [
                     'partner_vat' => $this->ruc
                 ]);
@@ -245,9 +250,16 @@ new class extends Component {
 
             $this->carga_ejecutada = true;
 
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
             $this->carga_ejecutada = true;
-            $this->error = 'Error: ' . $e->getMessage();
+            $this->error = 'El servicio de órdenes de alquiler está tardando más de lo esperado. Intenta actualizar nuevamente en unos momentos.';
+            Log::error('Error en obtenerordenesAlquiler:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        } catch (\Throwable $e) {
+            $this->carga_ejecutada = true;
+            $this->error = 'No pudimos actualizar las órdenes de alquiler. Intenta nuevamente en unos momentos.';
             Log::error('Error en obtenerordenesAlquiler:', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

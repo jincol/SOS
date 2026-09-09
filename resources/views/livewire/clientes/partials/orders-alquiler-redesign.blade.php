@@ -11,7 +11,11 @@
         <div wire:loading.remove wire:target="obtenerOrdenesAlquiler">
             <div class="orders-toolbar">
                 <div class="orders-result-summary"><span class="orders-count">{{ $total }}</span><div><strong>{{ $total === 1 ? 'orden encontrada' : 'órdenes encontradas' }}</strong><span>Espacios, ocupación y documentos vinculados</span></div></div>
-                <button class="btn btn-secondary btn-sm" type="button" wire:click="obtenerOrdenesAlquiler"><x-sos-icon name="refresh" class="icon-sm" /><span>Actualizar</span></button>
+                <button class="btn btn-secondary btn-sm" type="button" wire:click="obtenerOrdenesAlquiler" wire:loading.attr="disabled" wire:loading.class="is-loading" wire:target="obtenerOrdenesAlquiler">
+                    <x-sos-icon name="refresh" class="icon-sm" />
+                    <span wire:loading.remove wire:target="obtenerOrdenesAlquiler">Actualizar</span>
+                    <span wire:loading wire:target="obtenerOrdenesAlquiler">Actualizando…</span>
+                </button>
             </div>
 
             <div class="card filters-card orders-filters" x-data="{ advanced: {{ ($filtroCompany || $filtroSucursal || $filtroUsuario) ? 'true' : 'false' }} }">
@@ -61,7 +65,7 @@
                                     </div></td>
                                 </tr>
                             @empty
-                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="search" /></span><h3>No encontramos órdenes</h3><p>Prueba con otros criterios o limpia los filtros.</p><button class="btn btn-secondary btn-sm" type="button" wire:click="resetFiltros">Limpiar filtros</button></div></td></tr>
+                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="{{ $error ? 'alert' : 'search' }}" /></span><h3>{{ $error ? 'No se pudieron cargar las órdenes' : 'No encontramos órdenes' }}</h3><p>{{ $error ? 'El servicio no respondió a tiempo. Puedes intentarlo nuevamente.' : 'Prueba con otros criterios o limpia los filtros.' }}</p><button class="btn btn-secondary btn-sm" type="button" wire:click="{{ $error ? 'obtenerOrdenesAlquiler' : 'resetFiltros' }}" wire:loading.attr="disabled">{{ $error ? 'Reintentar' : 'Limpiar filtros' }}</button></div></td></tr>
                             @endforelse
                         </tbody>
                     </table>
