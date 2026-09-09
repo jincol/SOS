@@ -2216,6 +2216,10 @@ a {
   min-width: 1080px;
 }
 
+.orders-table-alquiler {
+  min-width: 1040px;
+}
+
 .orders-table th:first-child,
 .orders-table td:first-child {
   padding-left: 18px;

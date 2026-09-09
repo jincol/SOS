@@ -37,11 +37,11 @@
 
             <div class="card list-card orders-list-card">
                 <div class="table-wrap">
-                    <table class="data-table orders-table">
+                    <table class="data-table orders-table orders-table-alquiler">
                         <thead><tr>
                             <th><button class="sort-button" type="button" wire:click="ordenar('name')">Orden @if($ordenarPor === 'name') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
                             <th><button class="sort-button" type="button" wire:click="ordenar('creation_datetime')">Fecha @if($ordenarPor === 'creation_datetime') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
-                            <th>Consignatario</th><th>Ocupación</th><th>Sucursal</th><th>Estado</th><th class="align-right">Acciones</th>
+                            <th>Consignatario</th><th>Área ocupada</th><th>Bultos</th><th>Sucursal</th><th>Estado</th><th class="align-right">Acciones</th>
                         </tr></thead>
                         <tbody>
                             @forelse($ordenesFiltradas as $orden)
@@ -54,7 +54,8 @@
                                     <td data-label="Orden"><span class="cell-primary order-code">{{ $orden['name'] ?: 'Sin código' }}</span><span class="cell-secondary cell-clip">{{ $orden['company_id'] ?: 'Compañía no registrada' }}</span></td>
                                     <td data-label="Fecha"><span class="cell-primary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('d/m/Y') : 'No registrada' }}</span><span class="cell-secondary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('H:i') : 'Hora no registrada' }} · {{ $orden['user_id'] ?: 'Sin usuario' }}</span></td>
                                     <td data-label="Consignatario"><span class="cell-clip" title="{{ $orden['consignatario'] }}">{{ $orden['consignatario'] ?: 'No registrado' }}</span><span class="cell-secondary">RUC {{ $orden['consignatario_ruc'] ?: 'no registrado' }}</span></td>
-                                    <td data-label="Ocupación"><span class="cell-primary">{{ $orden['number_m2'] !== '' ? $orden['number_m2'] : '—' }} m²</span><span class="cell-secondary">{{ $orden['number_bundles'] !== '' ? $orden['number_bundles'] : '—' }} bultos</span></td>
+                                    <td data-label="Área ocupada"><strong>{{ $orden['number_m2'] !== '' ? $orden['number_m2'] : '—' }} m²</strong></td>
+                                    <td data-label="Bultos"><strong>{{ $orden['number_bundles'] !== '' ? $orden['number_bundles'] : '—' }}</strong></td>
                                     <td data-label="Sucursal"><span class="cell-clip" title="{{ $orden['branch_id'] }}">{{ $orden['branch_id'] ?: 'No registrada' }}</span></td>
                                     <td data-label="Estado"><span class="badge {{ $stateClass }}">{{ $stateLabel }}</span></td>
                                     <td data-label="Acciones"><div class="row-actions">
@@ -65,7 +66,7 @@
                                     </div></td>
                                 </tr>
                             @empty
-                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="{{ $error ? 'alert' : 'search' }}" /></span><h3>{{ $error ? 'No se pudieron cargar las órdenes' : 'No encontramos órdenes' }}</h3><p>{{ $error ? 'El servicio no respondió a tiempo. Puedes intentarlo nuevamente.' : 'Prueba con otros criterios o limpia los filtros.' }}</p><button class="btn btn-secondary btn-sm" type="button" wire:click="{{ $error ? 'obtenerOrdenesAlquiler' : 'resetFiltros' }}" wire:loading.attr="disabled">{{ $error ? 'Reintentar' : 'Limpiar filtros' }}</button></div></td></tr>
+                                <tr class="empty-row"><td colspan="8"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="{{ $error ? 'alert' : 'search' }}" /></span><h3>{{ $error ? 'No se pudieron cargar las órdenes' : 'No encontramos órdenes' }}</h3><p>{{ $error ? 'El servicio no respondió a tiempo. Puedes intentarlo nuevamente.' : 'Prueba con otros criterios o limpia los filtros.' }}</p><button class="btn btn-secondary btn-sm" type="button" wire:click="{{ $error ? 'obtenerOrdenesAlquiler' : 'resetFiltros' }}" wire:loading.attr="disabled">{{ $error ? 'Reintentar' : 'Limpiar filtros' }}</button></div></td></tr>
                             @endforelse
                         </tbody>
                     </table>
