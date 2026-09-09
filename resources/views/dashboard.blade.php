@@ -24,7 +24,7 @@
         }
     </script>
     @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.6">
+    <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.7">
     @livewireStyles
 </head>
 @php
@@ -61,6 +61,7 @@
     }"
     @keydown.escape.window="closeSidebar(); accountOpen = false"
 >
+    <div class="route-progress" aria-hidden="true"></div>
     <a class="skip-link" href="#main-content">Ir al contenido principal</a>
 
     <div class="app-shell">
@@ -76,33 +77,33 @@
             <nav class="sidebar-nav">
                 <p class="nav-group-label">General</p>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'dashboard' }" :aria-current="activeMenu === 'dashboard' ? 'page' : null"
-                   href="{{ route('dashboard') }}" @click="closeSidebar()">
+                   href="{{ route('dashboard') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="dashboard" /><span class="nav-text">Resumen</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'comprobantes' }" :aria-current="activeMenu === 'comprobantes' ? 'page' : null"
-                   href="{{ route('clientes.comprobantes') }}" @click="closeSidebar()">
+                   href="{{ route('clientes.comprobantes') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="receipt" /><span class="nav-text">Comprobantes</span>
                 </a>
 
                 <p class="nav-group-label">Operaciones</p>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenesingreso' }" :aria-current="activeMenu === 'ordenesingreso' ? 'page' : null"
-                   href="{{ route('clientes.ordenes.ingresos') }}" @click="closeSidebar()">
+                   href="{{ route('clientes.ordenes.ingresos') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="inbox" /><span class="nav-text">Órdenes de ingreso</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenessalida' }" :aria-current="activeMenu === 'ordenessalida' ? 'page' : null"
-                   href="{{ route('clientes.ordenes.salidas') }}" @click="closeSidebar()">
+                   href="{{ route('clientes.ordenes.salidas') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="outbox" /><span class="nav-text">Órdenes de salida</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenestransporte' }" :aria-current="activeMenu === 'ordenestransporte' ? 'page' : null"
-                   href="{{ route('clientes.ordenes.transportes') }}" @click="closeSidebar()">
+                   href="{{ route('clientes.ordenes.transportes') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="truck" /><span class="nav-text">Órdenes de transporte</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenesservicio' }" :aria-current="activeMenu === 'ordenesservicio' ? 'page' : null"
-                   href="{{ route('clientes.ordenes.servicios') }}" @click="closeSidebar()">
+                   href="{{ route('clientes.ordenes.servicios') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="tools" /><span class="nav-text">Órdenes de servicio</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenesalquiler' }" :aria-current="activeMenu === 'ordenesalquiler' ? 'page' : null"
-                   href="{{ route('clientes.ordenes.alquileres') }}" @click="closeSidebar()">
+                   href="{{ route('clientes.ordenes.alquileres') }}" wire:navigate @click="closeSidebar()">
                     <x-sos-icon name="warehouse" /><span class="nav-text">Órdenes de alquiler</span>
                 </a>
             </nav>
@@ -138,7 +139,7 @@
                         <x-sos-icon name="chevron-down" class="icon-sm" />
                     </button>
                     <div class="account-popover" id="account-popover" x-cloak x-show="accountOpen" x-transition>
-                        <a href="{{ route('clientes.perfil-usuario') }}"><x-sos-icon name="user" class="icon-sm" /> Ver perfil</a>
+                        <a href="{{ route('clientes.perfil-usuario') }}" wire:navigate><x-sos-icon name="user" class="icon-sm" /> Ver perfil</a>
                         <form action="{{ route('salir') }}" method="GET">
                             @csrf
                             <button type="submit"><x-sos-icon name="logout" class="icon-sm" /> Cerrar sesión</button>
@@ -149,7 +150,7 @@
 
             <main class="page" id="main-content">
                 <nav class="breadcrumb" aria-label="Migas de pan">
-                    <a href="{{ route('dashboard') }}">Inicio</a>
+                    <a href="{{ route('dashboard') }}" wire:navigate>Inicio</a>
                     <span aria-hidden="true">›</span>
                     <span>{{ $currentPage[2] }}</span>
                 </nav>
@@ -196,7 +197,7 @@
     </a>
 
     @livewireScripts
-    <script>
+    <script data-navigate-once>
         function enhancePortalTables() {
             document.querySelectorAll('.portal-livewire table').forEach((table) => {
                 const labels = Array.from(table.querySelectorAll('thead th')).map((cell) => cell.textContent.trim().replace(/\s+/g, ' '));
@@ -209,6 +210,15 @@
         }
 
         document.addEventListener('DOMContentLoaded', enhancePortalTables);
+        document.addEventListener('livewire:navigating', () => {
+            document.documentElement.classList.add('is-route-navigating');
+            document.querySelector('#main-content')?.setAttribute('aria-busy', 'true');
+        });
+        document.addEventListener('livewire:navigated', () => {
+            document.documentElement.classList.remove('is-route-navigating');
+            document.querySelector('#main-content')?.removeAttribute('aria-busy');
+            enhancePortalTables();
+        });
         document.addEventListener('livewire:initialized', () => {
             enhancePortalTables();
             Livewire.hook('morph.updated', enhancePortalTables);

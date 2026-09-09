@@ -2805,6 +2805,56 @@ a {
   overflow-x: hidden;
 }
 
+.route-progress {
+  position: fixed;
+  z-index: 3000;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  background: rgb(255 255 255 / 42%);
+  transition: opacity 120ms ease;
+}
+
+.route-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 38%;
+  background: linear-gradient(90deg, #b80d24, #ef3340, #ff8b95);
+  box-shadow: 0 0 8px rgb(184 13 36 / 38%);
+  transform: translateX(-110%);
+}
+
+html.is-route-navigating .route-progress {
+  opacity: 1;
+}
+
+html.is-route-navigating .route-progress::after {
+  animation: route-progress-slide 850ms ease-in-out infinite;
+}
+
+html.is-route-navigating .portal-content {
+  cursor: progress;
+}
+
+@keyframes route-progress-slide {
+  to {
+    transform: translateX(365%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.is-route-navigating .route-progress::after {
+    width: 100%;
+    animation: none;
+    transform: none;
+  }
+}
+
 .portal-content {
   min-width: 0;
 }
