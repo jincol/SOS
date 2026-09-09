@@ -21,11 +21,16 @@ new class extends Component {
 
 }; ?>
 
-<div class="order-detail-modal">
+<div
+    class="order-detail-modal"
+    x-data="{ modalOpen: true }"
+    x-show="modalOpen"
+    @keydown.escape.window="if (modalOpen) { modalOpen = false; $dispatch('cerrarModalOrdenAlquiler') }"
+>
 
     <div class="relative z-10" aria-labelledby="dialog-title" role="dialog" aria-modal="true">
         <!-- Background backdrop -->
-        <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+        <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true" @click="if (modalOpen) { modalOpen = false; $dispatch('cerrarModalOrdenAlquiler') }"></div>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -50,7 +55,9 @@ new class extends Component {
                             </div>
                             <!-- Botón cerrar en el header -->
                             <button
-                                wire:click="cerrarComponente"
+                                type="button"
+                                aria-label="Cerrar detalle"
+                                @click="if (modalOpen) { modalOpen = false; $dispatch('cerrarModalOrdenAlquiler') }"
                                 class="ml-auto text-gray-400 hover:text-gray-600 focus:outline-none sm:ml-4"
                             >
                                 <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -291,7 +298,7 @@ new class extends Component {
 
                         <button
                             type="button"
-                            wire:click="cerrarComponente"
+                            @click="if (modalOpen) { modalOpen = false; $dispatch('cerrarModalOrdenAlquiler') }"
                             class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
                         >
                             <div wire:loading.remove wire:target="cerrarComponente">

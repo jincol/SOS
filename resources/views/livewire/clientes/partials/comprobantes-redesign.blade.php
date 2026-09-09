@@ -76,8 +76,9 @@
                                             Emisión @if($ordenarPor === 'invoice_date') {{ $ordenAscendente ? '↑' : '↓' }} @endif
                                         </button>
                                     </th>
-                                    <th>Periodo</th>
+                                    <th>Periodo del servicio</th>
                                     <th>Estado de pago</th>
+                                    <th>Estado contable</th>
                                     <th>Vencimiento</th>
                                     <th>
                                         <button class="sort-button" type="button" wire:click="ordenar('amount_total')">
@@ -85,15 +86,18 @@
                                         </button>
                                     </th>
                                     <th>Saldo</th>
-                                    <th><span class="sr-only">Acciones</span></th>
+                                    <th>Documentos</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($comprobantesFiltrados as $comprobante)
                                     @php
                                         $paymentCode = $comprobante['payment_state_'] ?? ($comprobante['payment_state'][0] ?? 'not_paid');
-                                        $paymentLabel = ['paid' => 'Pagado', 'partial' => 'Parcial', 'not_paid' => 'Pendiente'][$paymentCode] ?? 'Pendiente';
-                                        $paymentClass = ['paid' => 'success', 'partial' => 'warning', 'not_paid' => 'danger'][$paymentCode] ?? 'warning';
+                                        $paymentLabel = ['paid' => 'Pagado', 'partial' => 'Pago parcial', 'not_paid' => 'Pendiente', 'in_payment' => 'En proceso', 'reversed' => 'Revertido', 'invoicing_legacy' => 'Sistema anterior'][$paymentCode] ?? 'Sin estado';
+                                        $paymentClass = ['paid' => 'success', 'partial' => 'warning', 'not_paid' => 'danger', 'in_payment' => 'warning', 'reversed' => 'neutral', 'invoicing_legacy' => 'neutral'][$paymentCode] ?? 'neutral';
+                                        $accountingCode = $comprobante['state'][0] ?? 'draft';
+                                        $accountingLabel = ['posted' => 'Contabilizado', 'draft' => 'Borrador', 'cancel' => 'Cancelado'][$accountingCode] ?? 'Sin estado';
+                                        $accountingClass = ['posted' => 'success', 'draft' => 'warning', 'cancel' => 'danger'][$accountingCode] ?? 'neutral';
                                         $service = ['ALMACENAMIENTO' => 'Almacenamiento', 'COMPLEMENTARIOS' => 'Servicio complementario'][$comprobante['service_type'] ?? ''] ?? ($comprobante['service_type'] ?: 'No registrado');
                                         $periodStart = $comprobante['date_start'] ? \Carbon\Carbon::parse($comprobante['date_start'])->format('d/m/Y') : null;
                                         $periodEnd = $comprobante['date_outlet'] ? \Carbon\Carbon::parse($comprobante['date_outlet'])->format('d/m/Y') : null;
@@ -102,12 +106,13 @@
                                         <td data-label="Servicio">{{ $service }}</td>
                                         <td data-label="Comprobante"><span class="cell-primary">{{ $comprobante['name'] ?: 'Sin número' }}</span><span class="cell-secondary">{{ $comprobante['dam'] ?: 'Sin DAM asociada' }}</span></td>
                                         <td data-label="Emisión">{{ $comprobante['invoice_date'] ? \Carbon\Carbon::parse($comprobante['invoice_date'])->format('d/m/Y') : 'No registrada' }}</td>
-                                        <td data-label="Periodo">{{ $periodStart ?: 'No registrado' }} @if($periodEnd) <span class="cell-secondary">hasta {{ $periodEnd }}</span> @endif</td>
+                                        <td data-label="Periodo del servicio">{{ $periodStart ?: 'No registrado' }} @if($periodEnd) <span class="cell-secondary">hasta {{ $periodEnd }}</span> @endif</td>
                                         <td data-label="Estado de pago"><span class="badge {{ $paymentClass }}">{{ $paymentLabel }}</span></td>
+                                        <td data-label="Estado contable"><span class="badge {{ $accountingClass }}">{{ $accountingLabel }}</span></td>
                                         <td data-label="Vencimiento">{{ $comprobante['vencimiento'] !== '' ? $comprobante['vencimiento'] : 'No registrado' }}</td>
                                         <td data-label="Total">S/ {{ number_format($comprobante['amount_total'] ?? 0, 2) }}</td>
                                         <td data-label="Saldo">S/ {{ number_format($comprobante['amount_residual'] ?? 0, 2) }}</td>
-                                        <td data-label="Acciones">
+                                        <td data-label="Documentos">
                                             <div class="row-actions">
                                                 @if($comprobante['ruta_pdf'])
                                                     <a class="btn btn-secondary btn-sm" href="{{ $comprobante['ruta_pdf'] }}" target="_blank" rel="noopener noreferrer" aria-label="Abrir PDF de {{ $comprobante['name'] }}">PDF</a>

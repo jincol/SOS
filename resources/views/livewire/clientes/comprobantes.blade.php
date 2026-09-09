@@ -365,7 +365,7 @@ new class extends Component {
 
 }; ?>
 
-<div>
+<div wire:init="primeraCargaDesdeMenu">
     @include('livewire.clientes.partials.comprobantes-redesign')
     @if(false)
 

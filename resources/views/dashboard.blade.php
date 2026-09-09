@@ -7,6 +7,22 @@
     <meta name="description" content="Portal de clientes de Almacenes y Depósitos de Aduanas SOS">
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     <title>Portal de clientes | Almacenes SOS</title>
+    <script>
+        const legacyPortalRoutes = {
+            '#/dashboard': '/dashboard',
+            '#/comprobantes': '/comprobantes',
+            '#/ordenes/ingresos': '/ordenes/ingresos',
+            '#/ordenes/salidas': '/ordenes/salidas',
+            '#/ordenes/transportes': '/ordenes/transportes',
+            '#/ordenes/servicios': '/ordenes/servicios',
+            '#/ordenes/alquileres': '/ordenes/alquileres',
+            '#/perfil': '/perfil'
+        };
+        const legacyDestination = legacyPortalRoutes[window.location.hash];
+        if (legacyDestination && window.location.pathname !== legacyDestination) {
+            window.location.replace(legacyDestination);
+        }
+    </script>
     @vite('resources/css/app.css')
     <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.0">
     @livewireStyles
@@ -15,40 +31,25 @@
     $companyName = Session::get('user_data.razon_social') ?? 'Empresa cliente';
     $companyRuc = Session::get('user_data.ruc') ?? 'RUC no registrado';
     $initials = collect(preg_split('/\s+/', trim($companyName)))->filter()->take(2)->map(fn ($word) => mb_strtoupper(mb_substr($word, 0, 1)))->join('');
+    $activeMenu = $activeMenu ?? 'dashboard';
+    $pageMeta = [
+        'dashboard' => ['Resumen de tu operación', 'Indicadores claros para revisar documentos y operaciones pendientes.', 'Resumen'],
+        'comprobantes' => ['Comprobantes', 'Consulta periodos, vencimientos, saldos y documentos sin mezclar conceptos.', 'Facturación'],
+        'ordenesingreso' => ['Órdenes de ingreso', 'Consulta el ingreso de mercancía, responsable, almacén y estado operativo.', 'Operaciones'],
+        'ordenessalida' => ['Órdenes de salida', 'Controla despachos, órdenes relacionadas y destinos.', 'Operaciones'],
+        'ordenestransporte' => ['Órdenes de transporte', 'Revisa transportista, ruta, unidad y situación de cada traslado.', 'Operaciones'],
+        'ordenesservicio' => ['Órdenes de servicio', 'Consulta servicios operativos, conceptos y aprobaciones.', 'Operaciones'],
+        'ordenesalquiler' => ['Órdenes de alquiler', 'Visualiza espacios asignados, área ocupada y mercancía relacionada.', 'Operaciones'],
+        'perfil' => ['Perfil de empresa', 'Administra la información y seguridad de la cuenta.', 'Cuenta'],
+    ];
+    $currentPage = $pageMeta[$activeMenu] ?? $pageMeta['dashboard'];
 @endphp
 <body
     class="portal-body"
     x-data="{
         sidebarOpen: false,
         accountOpen: false,
-        activeMenu: ({
-            '#/dashboard': 'dashboard',
-            '#/comprobantes': 'comprobantes',
-            '#/ordenes/ingresos': 'ordenesingreso',
-            '#/ordenes/salidas': 'ordenessalida',
-            '#/ordenes/transportes': 'ordenestransporte',
-            '#/ordenes/servicios': 'ordenesservicio',
-            '#/ordenes/alquileres': 'ordenesalquiler',
-            '#/perfil': 'perfil'
-        })[window.location.hash] || 'dashboard',
-        titles: {
-            dashboard: ['Resumen de tu operación', 'Indicadores claros para revisar documentos y operaciones pendientes.', 'Resumen'],
-            comprobantes: ['Comprobantes', 'Consulta periodos, vencimientos, saldos y documentos sin mezclar conceptos.', 'Facturación'],
-            ordenesingreso: ['Órdenes de ingreso', 'Consulta el ingreso de mercancía, responsable, almacén y estado operativo.', 'Operaciones'],
-            ordenessalida: ['Órdenes de salida', 'Controla despachos, órdenes relacionadas y destinos.', 'Operaciones'],
-            ordenestransporte: ['Órdenes de transporte', 'Revisa transportista, ruta, unidad y situación de cada traslado.', 'Operaciones'],
-            ordenesservicio: ['Órdenes de servicio', 'Consulta servicios operativos, conceptos y aprobaciones.', 'Operaciones'],
-            ordenesalquiler: ['Órdenes de alquiler', 'Visualiza espacios asignados, área ocupada y mercancía relacionada.', 'Operaciones'],
-            perfil: ['Perfil de empresa', 'Administra la información y seguridad de la cuenta.', 'Cuenta']
-        },
-        choose(menu, hash) {
-            this.activeMenu = menu;
-            window.location.hash = hash;
-            this.sidebarOpen = false;
-            document.body.classList.remove('nav-open');
-            this.accountOpen = false;
-            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-        },
+        activeMenu: @js($activeMenu),
         openSidebar() {
             this.sidebarOpen = true;
             document.body.classList.add('nav-open');
@@ -75,33 +76,33 @@
             <nav class="sidebar-nav">
                 <p class="nav-group-label">General</p>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'dashboard' }" :aria-current="activeMenu === 'dashboard' ? 'page' : null"
-                   href="#/dashboard" @click="choose('dashboard', '#/dashboard'); $dispatch('cargar-estadisticas')">
+                   href="{{ route('dashboard') }}" @click="closeSidebar()">
                     <x-sos-icon name="dashboard" /><span class="nav-text">Resumen</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'comprobantes' }" :aria-current="activeMenu === 'comprobantes' ? 'page' : null"
-                   href="#/comprobantes" @click="choose('comprobantes', '#/comprobantes'); $dispatch('cargar-comprobantes')">
+                   href="{{ route('clientes.comprobantes') }}" @click="closeSidebar()">
                     <x-sos-icon name="receipt" /><span class="nav-text">Comprobantes</span>
                 </a>
 
                 <p class="nav-group-label">Operaciones</p>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenesingreso' }" :aria-current="activeMenu === 'ordenesingreso' ? 'page' : null"
-                   href="#/ordenes/ingresos" @click="choose('ordenesingreso', '#/ordenes/ingresos'); $dispatch('obtener-ordenes-ingreso')">
+                   href="{{ route('clientes.ordenes.ingresos') }}" @click="closeSidebar()">
                     <x-sos-icon name="inbox" /><span class="nav-text">Órdenes de ingreso</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenessalida' }" :aria-current="activeMenu === 'ordenessalida' ? 'page' : null"
-                   href="#/ordenes/salidas" @click="choose('ordenessalida', '#/ordenes/salidas'); $dispatch('obtener-ordenes-salida')">
+                   href="{{ route('clientes.ordenes.salidas') }}" @click="closeSidebar()">
                     <x-sos-icon name="outbox" /><span class="nav-text">Órdenes de salida</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenestransporte' }" :aria-current="activeMenu === 'ordenestransporte' ? 'page' : null"
-                   href="#/ordenes/transportes" @click="choose('ordenestransporte', '#/ordenes/transportes'); $dispatch('obtener-ordenes-transporte')">
+                   href="{{ route('clientes.ordenes.transportes') }}" @click="closeSidebar()">
                     <x-sos-icon name="truck" /><span class="nav-text">Órdenes de transporte</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenesservicio' }" :aria-current="activeMenu === 'ordenesservicio' ? 'page' : null"
-                   href="#/ordenes/servicios" @click="choose('ordenesservicio', '#/ordenes/servicios'); $dispatch('obtener-ordenes-servicio')">
+                   href="{{ route('clientes.ordenes.servicios') }}" @click="closeSidebar()">
                     <x-sos-icon name="tools" /><span class="nav-text">Órdenes de servicio</span>
                 </a>
                 <a class="nav-link" :class="{ 'active': activeMenu === 'ordenesalquiler' }" :aria-current="activeMenu === 'ordenesalquiler' ? 'page' : null"
-                   href="#/ordenes/alquileres" @click="choose('ordenesalquiler', '#/ordenes/alquileres'); $dispatch('obtener-ordenes-alquiler')">
+                   href="{{ route('clientes.ordenes.alquileres') }}" @click="closeSidebar()">
                     <x-sos-icon name="warehouse" /><span class="nav-text">Órdenes de alquiler</span>
                 </a>
             </nav>
@@ -137,7 +138,7 @@
                         <x-sos-icon name="chevron-down" class="icon-sm" />
                     </button>
                     <div class="account-popover" id="account-popover" x-cloak x-show="accountOpen" x-transition>
-                        <a href="#/perfil" @click="choose('perfil', '#/perfil')"><x-sos-icon name="user" class="icon-sm" /> Ver perfil</a>
+                        <a href="{{ route('clientes.perfil-usuario') }}"><x-sos-icon name="user" class="icon-sm" /> Ver perfil</a>
                         <form action="{{ route('salir') }}" method="GET">
                             @csrf
                             <button type="submit"><x-sos-icon name="logout" class="icon-sm" /> Cerrar sesión</button>
@@ -148,40 +149,43 @@
 
             <main class="page" id="main-content">
                 <nav class="breadcrumb" aria-label="Migas de pan">
-                    <a href="#/dashboard" @click="choose('dashboard', '#/dashboard')">Inicio</a>
+                    <a href="{{ route('dashboard') }}">Inicio</a>
                     <span aria-hidden="true">›</span>
-                    <span x-text="titles[activeMenu][2]"></span>
+                    <span>{{ $currentPage[2] }}</span>
                 </nav>
                 <header class="page-header">
                     <div class="page-title-group">
-                        <h1 x-text="titles[activeMenu][0]"></h1>
-                        <p x-text="titles[activeMenu][1]"></p>
+                        <h1>{{ $currentPage[0] }}</h1>
+                        <p>{{ $currentPage[1] }}</p>
                     </div>
                 </header>
 
-                <section class="portal-section portal-livewire" x-show="activeMenu === 'dashboard'" x-transition.opacity>
-                    <livewire:clientes.estadisticas />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'comprobantes'" x-transition.opacity>
-                    <livewire:clientes.comprobantes />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'ordenesingreso'" x-transition.opacity>
-                    <livewire:clientes.ordenes />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'ordenessalida'" x-transition.opacity>
-                    <livewire:clientes.ordenessalida />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'ordenestransporte'" x-transition.opacity>
-                    <livewire:clientes.ordenestransporte />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'ordenesservicio'" x-transition.opacity>
-                    <livewire:clientes.ordenesservicio />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'ordenesalquiler'" x-transition.opacity>
-                    <livewire:clientes.ordenesalquiler />
-                </section>
-                <section class="portal-section portal-livewire" x-cloak x-show="activeMenu === 'perfil'" x-transition.opacity>
-                    <livewire:clientes.perfil-usuario />
+                <section class="portal-section portal-livewire">
+                    @switch($activeMenu)
+                        @case('comprobantes')
+                            <livewire:clientes.comprobantes />
+                            @break
+                        @case('ordenesingreso')
+                            <livewire:clientes.ordenes />
+                            @break
+                        @case('ordenessalida')
+                            <livewire:clientes.ordenessalida />
+                            @break
+                        @case('ordenestransporte')
+                            <livewire:clientes.ordenestransporte />
+                            @break
+                        @case('ordenesservicio')
+                            <livewire:clientes.ordenesservicio />
+                            @break
+                        @case('ordenesalquiler')
+                            <livewire:clientes.ordenesalquiler />
+                            @break
+                        @case('perfil')
+                            <livewire:clientes.perfil-usuario />
+                            @break
+                        @default
+                            <livewire:clientes.estadisticas />
+                    @endswitch
                 </section>
             </main>
         </div>
@@ -208,9 +212,6 @@
         document.addEventListener('livewire:initialized', () => {
             enhancePortalTables();
             Livewire.hook('morph.updated', enhancePortalTables);
-            window.requestAnimationFrame(() => {
-                document.querySelector(`.nav-link[href="${window.location.hash}"]`)?.click();
-            });
         });
     </script>
 </body>

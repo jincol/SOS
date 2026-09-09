@@ -335,7 +335,7 @@ new class extends Component {
 
 }; ?>
 
-<div>
+<div wire:init="primeraCargaDesdeMenu">
     @include('livewire.clientes.partials.orders-servicio-redesign')
     @if(false)
     <!-- Estilos CSS -->
