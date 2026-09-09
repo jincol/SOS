@@ -55,7 +55,7 @@
                                 inputmode="numeric"
                                 wire:model="telefono"
                                 autocomplete="tel-national"
-                                maxlength="12"
+                                maxlength="9"
                                 placeholder="999 999 999"
                                 required
                             >

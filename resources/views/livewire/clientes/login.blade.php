@@ -71,18 +71,24 @@ new class extends Component {
     public $datae='';
     public function Autenticar()
     {
-        //dd($this->email);
-
         $this->isLoading = true;
+        $login = mb_strtolower(trim((string) $this->email));
+        $phone = preg_replace('/\D+/', '', (string) $this->telefono);
+
+        // La interfaz muestra el prefijo peruano por separado. La API compara
+        // el número normalizado incluyendo el código de país registrado en Odoo.
+        if (strlen($phone) === 9) {
+            $phone = '51'.$phone;
+        }
 
         try {
             $response = Http::withHeaders([
                 'Api-Key' => config('services.sistema25.api_key'),
                 'Content-Type' => 'application/json'
                 ])->post(config('services.sistema25.base_url').'/auth/customer', [
-                'login' => $this->email,     // Cambiar ruc por email
+                'login' => $login,
                 'password' => $this->contrasenia,
-                'phone' => $this->telefono
+                'phone' => $phone
             ]);
 
             if ($response->successful()) {
