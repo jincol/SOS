@@ -20,6 +20,7 @@ new class extends Component {
     public $filtroTipoIngreso = '';
     public $filtroAlmacenero = '';
     public $filtroCompany = '';
+    public $filtroUsuario = '';
 
     // Propiedades para paginación
     public $porPagina = 10;
@@ -53,6 +54,7 @@ new class extends Component {
         $this->filtroTipoIngreso = '';
         $this->filtroAlmacenero = '';
         $this->filtroCompany = '';
+        $this->filtroUsuario = '';
         $this->page = 1;
     }
 
@@ -108,6 +110,11 @@ new class extends Component {
             ->when($this->filtroCompany, function($collection) {
                 return $collection->filter(function($orden) {
                     return str_contains(strtolower($orden['company']), strtolower($this->filtroCompany));
+                });
+            })
+            ->when($this->filtroUsuario, function($collection) {
+                return $collection->filter(function($orden) {
+                    return str_contains(strtolower($orden['user']), strtolower($this->filtroUsuario));
                 });
             })
             ->when(true, function($collection) {

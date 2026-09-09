@@ -28,7 +28,7 @@
                     <div class="field"><label for="transporte-company">Compañía operadora</label><input id="transporte-company" class="control" type="search" wire:model.live.debounce.350ms="filtroCompany" placeholder="Nombre de la compañía"></div>
                     <div class="field"><label for="transporte-almacenero">Responsable de almacén</label><input id="transporte-almacenero" class="control" type="search" wire:model.live.debounce.350ms="filtroAlmacenero" placeholder="Nombre del responsable"></div>
                     <div class="field"><label for="transporte-sucursal">Sucursal</label><input id="transporte-sucursal" class="control" type="search" wire:model.live.debounce.350ms="filtroSucursal" placeholder="Nombre de la sucursal"></div>
-                    <div class="field"><label for="transporte-usuario">Usuario</label><input id="transporte-usuario" class="control" type="search" wire:model.live.debounce.350ms="filtroUsuario" placeholder="Responsable de registro"></div>
+                    <div class="field"><label for="transporte-usuario">Registrado por</label><input id="transporte-usuario" class="control" type="search" wire:model.live.debounce.350ms="filtroUsuario" placeholder="Nombre del usuario"></div>
                 </div>
             </div>
 
@@ -38,7 +38,7 @@
                         <thead><tr>
                             <th><button class="sort-button" type="button" wire:click="ordenar('name')">Orden @if($ordenarPor === 'name') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
                             <th><button class="sort-button" type="button" wire:click="ordenar('creation_date')">Fecha @if($ordenarPor === 'creation_date') <span>{{ $ordenAscendente ? '↑' : '↓' }}</span> @endif</button></th>
-                            <th>Consignatario</th><th>Responsable</th><th>Sucursal</th><th>Estado</th><th class="align-right">Acción</th>
+                            <th>Consignatario</th><th>Responsable de almacén</th><th>Registrado por</th><th>Sucursal</th><th>Estado</th><th class="align-right">Acción</th>
                         </tr></thead>
                         <tbody>
                             @forelse($ordenesFiltradas as $orden)
@@ -51,13 +51,14 @@
                                     <td data-label="Orden"><span class="cell-primary order-code">{{ $orden['name'] ?: 'Sin código' }}</span><span class="cell-secondary cell-clip">{{ $orden['company'] ?: 'Compañía no registrada' }}</span></td>
                                     <td data-label="Fecha"><span class="cell-primary">{{ !empty($orden['creation_date']) ? \Carbon\Carbon::parse($orden['creation_date'])->format('d/m/Y') : 'No registrada' }}</span><span class="cell-secondary">{{ !empty($orden['creation_datetime']) ? \Carbon\Carbon::parse($orden['creation_datetime'])->format('H:i') : 'Hora no registrada' }}</span></td>
                                     <td data-label="Consignatario"><span class="cell-clip" title="{{ $orden['consignatario'] }}">{{ $orden['consignatario'] ?: 'No registrado' }}</span></td>
-                                    <td data-label="Responsable"><span class="cell-clip" title="{{ $orden['almacenero'] }}">{{ $orden['almacenero'] ?: 'No asignado' }}</span><span class="cell-secondary cell-clip">{{ $orden['user'] ?: 'Usuario no registrado' }}</span></td>
+                                    <td data-label="Responsable de almacén"><span class="cell-clip" title="{{ $orden['almacenero'] }}">{{ $orden['almacenero'] ?: 'No asignado' }}</span></td>
+                                    <td data-label="Registrado por"><span class="cell-clip" title="{{ $orden['user'] }}">{{ $orden['user'] ?: 'No registrado' }}</span></td>
                                     <td data-label="Sucursal"><span class="cell-clip" title="{{ $orden['sucursal'] }}">{{ $orden['sucursal'] ?: 'No registrada' }}</span></td>
                                     <td data-label="Estado"><span class="badge {{ $stateClass }}">{{ $stateLabel }}</span></td>
                                     <td data-label="Acción"><div class="row-actions"><button class="btn btn-secondary btn-sm" type="button" wire:click="verDetalleOrdenTransporte('{{ $orden['name'] }}')" wire:loading.attr="disabled" wire:loading.class="is-loading" wire:target="verDetalleOrdenTransporte('{{ $orden['name'] }}')"><x-sos-icon name="eye" class="icon-sm" /><span>Ver detalle</span></button></div></td>
                                 </tr>
                             @empty
-                                <tr class="empty-row"><td colspan="7"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="search" /></span><h3>No encontramos órdenes</h3><p>Prueba con otros criterios o limpia los filtros.</p><button class="btn btn-secondary btn-sm" type="button" wire:click="resetFiltros">Limpiar filtros</button></div></td></tr>
+                                <tr class="empty-row"><td colspan="8"><div class="empty-state"><span class="empty-icon"><x-sos-icon name="search" /></span><h3>No encontramos órdenes</h3><p>Prueba con otros criterios o limpia los filtros.</p><button class="btn btn-secondary btn-sm" type="button" wire:click="resetFiltros">Limpiar filtros</button></div></td></tr>
                             @endforelse
                         </tbody>
                     </table>
