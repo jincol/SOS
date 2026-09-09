@@ -1142,6 +1142,12 @@ a {
   gap: 8px;
 }
 
+.filter-scope-note {
+  margin: 10px 0 0;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
 .search-control {
   position: relative;
 }
@@ -1287,6 +1293,14 @@ a {
   justify-content: flex-end;
   gap: 7px;
   white-space: nowrap;
+}
+
+.data-table .documents-column {
+  text-align: center !important;
+}
+
+.data-table .documents-column .row-actions {
+  justify-content: center;
 }
 
 .pagination {

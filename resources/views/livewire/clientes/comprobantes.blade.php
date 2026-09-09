@@ -37,8 +37,11 @@ new class extends Component {
     public $filtroTipoServicio = '';
 
     public $porPagina = 10;
-    // Agregar esta propiedad
     public $page = 1;
+    public $totalComprobantes = 0;
+    public $totalPaginas = 1;
+    public $hasNextPage = false;
+    public $hasPreviousPage = false;
 
 
     public $carga_ejecutada=false;
@@ -47,7 +50,25 @@ new class extends Component {
     // Metodo para cambiar de página
     public function setPage($page)
     {
+        $page = max(1, min((int) $page, max(1, (int) $this->totalPaginas)));
+
+        if ($page === (int) $this->page) {
+            return;
+        }
+
         $this->page = $page;
+        $this->obtenerComprobantes();
+    }
+
+    public function updatedPorPagina($value)
+    {
+        $value = (int) $value;
+        $this->porPagina = in_array($value, [10, 25, 50], true) ? $value : 10;
+        $this->page = 1;
+
+        if ($this->carga_ejecutada) {
+            $this->obtenerComprobantes();
+        }
     }
 
 
@@ -60,6 +81,10 @@ new class extends Component {
         $this->filtroEstadoPago = '';
         $this->filtroTipoServicio = ''; //Tipo de factura
         $this->page = 1;
+
+        if ($this->carga_ejecutada) {
+            $this->obtenerComprobantes();
+        }
     }
 
 
@@ -68,23 +93,15 @@ new class extends Component {
         return view('livewire.lista-comprobantes');
     }*/
 
-    public $ordenarPor = 'invoice_date'; // Campo por defecto para ordenar en el caso de la fecha
-    public $ordenAscendente = true; // este es para ordenamiento sie s ascendente o al revez xD
-
-    public function ordenar($campo)
-    {
-        if ($this->ordenarPor === $campo) {
-            $this->ordenAscendente = !$this->ordenAscendente;
-        } else {
-            $this->ordenarPor = $campo;
-            $this->ordenAscendente = true;
-        }
-    }
-
-
     //Filtros ...
     public function with(): array
     {
+        $filtersActive = filled($this->filtroFecha)
+            || filled($this->filtroNumero)
+            || filled($this->filtroMonto)
+            || filled($this->filtroEstadoPago)
+            || filled($this->filtroTipoServicio);
+
         $comprobantesFiltrados = collect($this->comprobantes)
             ->when($this->filtroFecha, function ($collection) {
                 return $collection->filter(function ($comprobante) {
@@ -111,33 +128,19 @@ new class extends Component {
                 return $collection->filter(function ($comprobante) {
                     return $comprobante['service_type'] === $this->filtroTipoServicio;
                 });
-            })
-            ->when(true, function ($collection) {
-                return $collection->sort(function ($a, $b) {
-                    $valorA = $this->ordenarPor === 'invoice_date'
-                        ? strtotime($a[$this->ordenarPor])
-                        : $a[$this->ordenarPor];
-                    $valorB = $this->ordenarPor === 'invoice_date'
-                        ? strtotime($b[$this->ordenarPor])
-                        : $b[$this->ordenarPor];
-
-                    if ($valorA == $valorB) return 0;
-
-                    $comparacion = $valorA < $valorB ? -1 : 1;
-                    return $this->ordenAscendente ? $comparacion : -$comparacion;
-                });
             });;
 
-        // Paginar la colección
-        $paginatedData = $comprobantesFiltrados->slice(($this->page - 1) * $this->porPagina, $this->porPagina)->values();
-        $total = $comprobantesFiltrados->count();
-
-
         return ([
-            'comprobantesFiltrados' => $paginatedData,
-            'hasMore' => ($this->page * $this->porPagina) < $total,
-            'total' => $total,
-            'page' => $this->page
+            'comprobantesFiltrados' => $comprobantesFiltrados->values(),
+            'hasMore' => $this->hasNextPage,
+            'hasPrevious' => $this->hasPreviousPage,
+            'total' => $this->totalComprobantes,
+            'lastPage' => $this->totalPaginas,
+            'page' => $this->page,
+            'visibleCount' => $comprobantesFiltrados->count(),
+            'filtersActive' => $filtersActive,
+            'firstItem' => $this->totalComprobantes > 0 ? (($this->page - 1) * $this->porPagina) + 1 : 0,
+            'lastItem' => min($this->page * $this->porPagina, $this->totalComprobantes),
         ]);
     }
 
@@ -163,6 +166,7 @@ new class extends Component {
 
         //sleep(3);
         try {
+            $this->error = '';
 
 
             // Crear carpeta si no existe
@@ -176,12 +180,15 @@ new class extends Component {
                 'Content-Type' => 'application/json'
             ])
                 ->get(config('services.sistema25.base_url').'/report/invoices', [
-                    'partner_vat' => $this->ruc //'20600650166',
+                    'partner_vat' => $this->ruc,
+                    'page' => $this->page,
+                    'limit' => $this->porPagina,
                 ]);
 
             Log::info('Response details:', [
                 'status' => $response->status(),
-                'data' => $response->json()
+                'page' => $this->page,
+                'limit' => $this->porPagina,
             ]);
 
             if ($response->successful()) {
@@ -196,6 +203,13 @@ new class extends Component {
                     throw new \Exception('Formato de respuesta inválido');
                 }
 
+                $pagination = $data['pagination'] ?? [];
+                $this->page = max(1, (int) ($pagination['page'] ?? $this->page));
+                $this->totalComprobantes = max(0, (int) ($pagination['total_records'] ?? count($data['data'])));
+                $this->totalPaginas = max(1, (int) ($pagination['total_pages'] ?? 1));
+                $this->hasNextPage = (bool) ($pagination['has_next'] ?? ($this->page < $this->totalPaginas));
+                $this->hasPreviousPage = (bool) ($pagination['has_previous'] ?? ($this->page > 1));
+
                 //$this->comprobantes = collect($data['invoices'])->map(function ($comprobante) {
                 $this->comprobantes = collect($data['data'])->map(function ($comprobante) {
                     $procesado = [
@@ -203,6 +217,7 @@ new class extends Component {
                         'invoice_date' => $comprobante['invoice_date'] ?? '',
                         'amount_total' => $comprobante['amount_total'] ?? 0.0,
                         'amount_residual' => $comprobante['amount_residual'] ?? 0.0,
+                        'currency' => $comprobante['currency_id'] ?? 'PEN',
                         'dam' => $comprobante['dam'] ?? '',
                         'date_start' => $comprobante['date_start'] ?? '',
                         'date_outlet' => $comprobante['date_outlet'] ?? '',
@@ -278,6 +293,7 @@ new class extends Component {
             $this->carga_ejecutada = true;
 
         } catch (\Exception $e) {
+            $this->carga_ejecutada = true;
             $this->error = 'Error: ' . $e->getMessage();
             Log::error('Error en obtenerComprobantes:', [
                 'error' => $e->getMessage(),
