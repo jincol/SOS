@@ -21,7 +21,7 @@ new class extends Component {
 
 }; ?>
 
-<div>
+<div class="order-detail-modal">
 
     <div class="relative z-10" aria-labelledby="dialog-title" role="dialog" aria-modal="true">
         <!-- Background backdrop -->
@@ -168,7 +168,7 @@ new class extends Component {
 
                                         <div class="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
                                             <button @click="xactiveTab='items'"
-                                                    class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200" :class="xactiveTab==='transporte' ? 'tab-active' : 'tab-inactive' ">
+                                                class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200" :class="xactiveTab==='items' ? 'tab-active' : 'tab-inactive' ">
                                                 1. Items
                                             </button>
 

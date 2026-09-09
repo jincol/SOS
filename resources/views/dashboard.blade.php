@@ -8,7 +8,7 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     <title>Portal de clientes | Almacenes SOS</title>
     @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.0.1">
+    <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.0">
     @livewireStyles
 </head>
 @php
@@ -47,6 +47,7 @@
             this.sidebarOpen = false;
             document.body.classList.remove('nav-open');
             this.accountOpen = false;
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         },
         openSidebar() {
             this.sidebarOpen = true;
@@ -207,6 +208,9 @@
         document.addEventListener('livewire:initialized', () => {
             enhancePortalTables();
             Livewire.hook('morph.updated', enhancePortalTables);
+            window.requestAnimationFrame(() => {
+                document.querySelector(`.nav-link[href="${window.location.hash}"]`)?.click();
+            });
         });
     </script>
 </body>

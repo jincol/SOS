@@ -21,7 +21,7 @@ new class extends Component {
 
 }; ?>
 
-<div>
+<div class="order-detail-modal">
 
     <div class="relative z-10" aria-labelledby="dialog-title" role="dialog" aria-modal="true">
         <!-- Background backdrop -->

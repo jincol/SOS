@@ -286,6 +286,7 @@ new class extends Component {
             $this->carga_ejecutada = true;
 
         } catch (\Exception $e) {
+            $this->carga_ejecutada = true;
             $this->error = 'Error: ' . $e->getMessage();
             Log::error('Error en obtenerOrdenesIngreso:', [
                 'error' => $e->getMessage(),
@@ -509,6 +510,8 @@ new class extends Component {
 }; ?>
 
 <div>
+    @include('livewire.clientes.partials.orders-ingreso-redesign')
+    @if(false)
             <!-- Estilos CSS -->
             <style>
                 /* Estilos generales */
@@ -1247,4 +1250,5 @@ new class extends Component {
 
 
 
+    @endif
 </div>

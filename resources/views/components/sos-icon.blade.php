@@ -21,6 +21,15 @@
         'money' => '<circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.5-1.7-.8-2.8-.8-1.7 0-3 .8-3 2s1.1 1.8 3 2.2 3 1 3 2.2-1.3 2.1-3 2.1c-1.2 0-2.3-.4-3.1-1M12 5.8v12.4"/>',
         'alert' => '<path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 18h.01"/>',
         'support' => '<circle cx="12" cy="12" r="9"/><path d="M8 14v-3a4 4 0 0 1 8 0v3M7 14h2v4H7zM15 14h2v4h-2z"/>',
+        'search' => '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+        'refresh' => '<path d="M20 6v5h-5M4 18v-5h5"/><path d="M18.5 9a7 7 0 0 0-12-2L4 11M5.5 15a7 7 0 0 0 12 2l2.5-4"/>',
+        'filter' => '<path d="M4 5h16M7 12h10M10 19h4"/>',
+        'eye' => '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
+        'document' => '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h5"/>',
+        'link' => '<path d="m10 13 4-4"/><path d="M8 16H6a4 4 0 0 1 0-8h3M16 8h2a4 4 0 1 1 0 8h-3"/>',
+        'chevron-left' => '<path d="m15 18-6-6 6-6"/>',
+        'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
+        'package' => '<path d="m4 7 8-4 8 4-8 4-8-4Z"/><path d="M4 7v10l8 4 8-4V7M12 11v10"/>',
     ];
     $path = $paths[$name] ?? $paths['dashboard'];
 @endphp

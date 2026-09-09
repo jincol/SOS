@@ -310,6 +310,7 @@ new class extends Component {
             $this->carga_ejecutada = true;
 
         } catch (\Exception $e) {
+            $this->carga_ejecutada = true;
             $this->error = 'Error: ' . $e->getMessage();
             Log::error('Error en obtenerordenesServicio:', [
                 'error' => $e->getMessage(),
@@ -335,6 +336,8 @@ new class extends Component {
 }; ?>
 
 <div>
+    @include('livewire.clientes.partials.orders-servicio-redesign')
+    @if(false)
     <!-- Estilos CSS -->
     <style>
         .container {
@@ -936,4 +939,5 @@ new class extends Component {
 
     @endif {{-- Fin de if para unica carga del primer esqueleton --}}
 
+    @endif
 </div>
