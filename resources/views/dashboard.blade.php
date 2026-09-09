@@ -24,7 +24,7 @@
         }
     </script>
     @vite('resources/css/app.css')
-    <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.5">
+    <link rel="stylesheet" href="{{ asset('css/sos-redesign.css') }}?v=1.1.6">
     @livewireStyles
 </head>
 @php

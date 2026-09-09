@@ -2217,7 +2217,28 @@ a {
 }
 
 .orders-table-alquiler {
-  min-width: 1040px;
+  min-width: 1180px;
+  table-layout: fixed;
+}
+
+.orders-table-alquiler th:nth-child(1) { width: 17%; }
+.orders-table-alquiler th:nth-child(2) { width: 11%; }
+.orders-table-alquiler th:nth-child(3) { width: 23%; }
+.orders-table-alquiler th:nth-child(4) { width: 9%; }
+.orders-table-alquiler th:nth-child(5) { width: 7%; }
+.orders-table-alquiler th:nth-child(6) { width: 12%; }
+.orders-table-alquiler th:nth-child(7) { width: 9%; }
+.orders-table-alquiler th:nth-child(8) { width: 12%; }
+
+.orders-table-alquiler .rental-company,
+.orders-table-alquiler .rental-consignee {
+  display: -webkit-box;
+  max-width: none;
+  overflow: hidden;
+  line-height: 1.35;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .orders-table th:first-child,
